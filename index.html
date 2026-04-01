@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="강태원 실무 포트폴리오 - 현장 운영, 정책 지원, 저널리즘">
+    <title>강태원 | 실무 포트폴리오</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-primary: #050508;
+            --bg-secondary: #0a0a10;
+            --accent-main: #6d28d9;
+            --accent-sub: #db2777;
+            --accent-cyan: #06b6d4;
+            --text-heading: #ffffff;
+            --text-body: #a1a1aa;
+            --text-muted: #6b7280;
+            --glass-bg: rgba(25, 25, 35, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.07);
+            --transition-smooth: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        
+        body { 
+            font-family: 'Noto Sans KR', sans-serif; 
+            background-color: var(--bg-primary); 
+            color: var(--text-body); 
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            cursor: none;
+        }
+
+        /* Custom Cursor */
+        .cursor-dot {
+            width: 8px; height: 8px; background: #fff; border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 99999;
+            transition: transform 0.1s;
+        }
+        .cursor-ring {
+            width: 40px; height: 40px; border: 2px solid rgba(167, 139, 250, 0.5); border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 99998;
+            transition: transform 0.15s ease-out, width 0.3s, height 0.3s, border-color 0.3s;
+            transform: translate(-50%, -50%);
+        }
+        .cursor-ring.hover {
+            width: 60px; height: 60px; border-color: var(--accent-sub);
+        }
+
+        /* Scroll Progress */
+        #progress-bar {
+            position: fixed; top: 0; left: 0; height: 3px; z-index: 9999;
+            background: linear-gradient(90deg, var(--accent-main), var(--accent-sub), var(--accent-cyan));
+            width: 0%; transition: width 0.1s;
+        }
+
+        /* Particle Canvas */
+        #particle-canvas {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -2; pointer-events: none;
+        }
+
+        /* Mesh Gradient Background */
+        .mesh-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; overflow: hidden; pointer-events: none;
+        }
+        .mesh-obj {
+            position: absolute; filter: blur(120px); border-radius: 50%;
+            opacity: 0.35; animation: float 20s infinite alternate;
+        }
+        .mesh-1 { width: 40vw; height: 40vw; background: var(--accent-main); top: -10vw; left: -10vw; }
+        .mesh-2 { width: 35vw; height: 35vw; background: var(--accent-sub); bottom: -10vw; right: -10vw; animation-duration: 25s; }
+        .mesh-3 { width: 25vw; height: 25vw; background: var(--accent-cyan); top: 50%; left: 50%; animation-duration: 30s; opacity: 0.15; }
+        
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 50px) scale(1.1); }
+        }
+
+        /* Noise Texture */
+        .noise-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.03; z-index: -1; pointer-events: none;
+        }
+
+        nav {
+            position: fixed; top: 0; width: 100%; padding: 20px 5%;
+            background: rgba(5, 5, 8, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex; justify-content: space-between; align-items: center; z-index: 100;
+        }
+        
+        .nav-logo { font-weight: 900; font-size: 1.2rem; color: var(--text-heading); letter-spacing: 1px; }
+        .nav-links { list-style: none; display: flex; gap: 30px; }
+        .nav-links a { 
+            text-decoration: none; color: var(--text-body); font-weight: 500; font-size: 0.9rem;
+            transition: var(--transition-smooth); position: relative; cursor: none;
+        }
+        .nav-links a:hover { color: var(--text-heading); }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px;
+            background: linear-gradient(90deg, var(--accent-main), var(--accent-sub)); transition: width 0.3s ease;
+        }
+        .nav-links a:hover::after { width: 100%; }
+
+        main { max-width: 1100px; margin: 0 auto; padding: 0 5%; }
+
+        section { padding: 120px 0; display: flex; flex-direction: column; }
+        
+        .section-header { margin-bottom: 60px; }
+        .section-label { font-size: 0.8rem; font-weight: 700; color: var(--accent-sub); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px; display: block; }
+        .section-title { font-size: 2.5rem; font-weight: 900; color: var(--text-heading); line-height: 1.2; }
+
+        /* Hero */
+        .hero { min-height: 100vh; justify-content: center; align-items: flex-start; padding-top: 150px; }
+        .hero-content { display: grid; grid-template-columns: 1fr auto; gap: 60px; align-items: center; width: 100%; }
+        .hero-text h1 { font-size: clamp(3rem, 6vw, 4.5rem); font-weight: 900; color: var(--text-heading); line-height: 1.1; margin-bottom: 20px; letter-spacing: -2px; }
+        .hero-text h1 span { 
+            background: linear-gradient(90deg, #a78bfa, #f472b6); 
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; 
+        }
+        .hero-text .typing-wrap { font-size: 1.15rem; color: var(--text-body); max-width: 500px; margin-bottom: 40px; min-height: 2em; }
+        .typing-cursor { 
+            display: inline-block; width: 2px; height: 1.2em; background: var(--accent-sub); 
+            margin-left: 2px; vertical-align: text-bottom;
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink { 0%,100%{ opacity:1 } 50%{ opacity:0 } }
+
+        /* Status tags under hero */
+        .hero-tags { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 30px; }
+        .hero-tag {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 16px; border-radius: 100px; font-size: 0.8rem; font-weight: 700;
+            border: 1px solid var(--glass-border); background: var(--glass-bg);
+            backdrop-filter: blur(10px); color: var(--text-body);
+            animation: tagPulse 3s ease-in-out infinite;
+        }
+        .hero-tag .dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; animation: dotPulse 2s ease-in-out infinite; }
+        @keyframes dotPulse { 0%,100%{ opacity:1; transform:scale(1); } 50%{ opacity:0.5; transform:scale(1.5); } }
+        @keyframes tagPulse { 0%,100%{ border-color: var(--glass-border); } 50%{ border-color: rgba(109,40,217,0.3); } }
+        
+        .profile-wrapper { position: relative; }
+        .profile-img { 
+            width: 320px; height: 420px; object-fit: cover; border-radius: 20px;
+            filter: grayscale(20%); transition: var(--transition-smooth);
+            border: 1px solid var(--glass-border);
+        }
+        .profile-img:hover { filter: grayscale(0); transform: translateY(-10px); box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
+        .profile-glow { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 20px; box-shadow: 0 0 40px var(--accent-main); opacity: 0; transition: var(--transition-smooth); z-index: -1; }
+        .profile-wrapper:hover .profile-glow { opacity: 0.3; }
+
+        /* Stats Section */
+        .stats-section { padding: 60px 0; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+        .stat-card {
+            text-align: center; padding: 40px 20px;
+            background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border); border-radius: 16px;
+            transition: var(--transition-smooth);
+        }
+        .stat-card:hover { transform: translateY(-5px); border-color: rgba(109,40,217,0.3); }
+        .stat-number {
+            font-size: 3rem; font-weight: 900; font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(135deg, #a78bfa, #f472b6);
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+        .stat-unit { font-size: 1.5rem; font-weight: 700; }
+        .stat-label { font-size: 0.85rem; color: var(--text-muted); margin-top: 8px; font-weight: 500; }
+
+        /* Experience Cards with Animated Border */
+        .exp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
+        .exp-card {
+            position: relative; border-radius: 16px; padding: 40px;
+            background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            transition: var(--transition-smooth); transform-style: preserve-3d;
+            overflow: hidden;
+        }
+        .exp-card::before {
+            content: ''; position: absolute; inset: 0; border-radius: 16px; padding: 1px;
+            background: linear-gradient(var(--angle, 0deg), var(--accent-main), var(--accent-sub), var(--accent-cyan), var(--accent-main));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor; mask-composite: exclude;
+            opacity: 0; transition: opacity 0.5s;
+        }
+        .exp-card:hover::before { opacity: 1; }
+        .exp-card:hover {
+            transform: translateY(-10px); background: rgba(35, 35, 45, 0.6);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        @property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+        @keyframes borderRotate { to { --angle: 360deg; } }
+        .exp-card:hover::before { animation: borderRotate 3s linear infinite; }
+
+        .exp-icon { font-size: 2.5rem; margin-bottom: 16px; display: block; }
+        .exp-header { margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; }
+        .exp-org { font-size: 1.3rem; font-weight: 900; color: var(--text-heading); }
+        .exp-period { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; font-family: 'JetBrains Mono', monospace; }
+        .exp-role { 
+            display: inline-block; padding: 6px 14px; background: rgba(109, 40, 217, 0.15); 
+            color: #a78bfa; border-radius: 20px; font-size: 0.85rem; font-weight: 700; margin-bottom: 20px;
+            border: 1px solid rgba(109, 40, 217, 0.3);
+        }
+        .exp-tasks { list-style: none; }
+        .exp-tasks li { 
+            position: relative; padding-left: 20px; margin-bottom: 12px; font-size: 0.95rem; line-height: 1.5;
+        }
+        .exp-tasks li::before {
+            content: '→'; position: absolute; left: 0; top: 0; color: var(--accent-sub); font-weight: 900; font-family: monospace;
+        }
+
+        /* Achievements Timeline */
+        .achievements { padding: 120px 0; }
+        .timeline { position: relative; padding-left: 40px; }
+        .timeline::before {
+            content: ''; position: absolute; left: 15px; top: 0; bottom: 0; width: 2px;
+            background: linear-gradient(to bottom, var(--accent-main), var(--accent-sub), transparent);
+        }
+        .timeline-item {
+            position: relative; margin-bottom: 40px; padding: 24px 30px;
+            background: var(--glass-bg); backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border); border-radius: 12px;
+            transition: var(--transition-smooth);
+        }
+        .timeline-item:hover { border-color: rgba(109,40,217,0.3); transform: translateX(10px); }
+        .timeline-item::before {
+            content: ''; position: absolute; left: -33px; top: 30px;
+            width: 12px; height: 12px; border-radius: 50%;
+            background: var(--accent-main); border: 3px solid var(--bg-primary);
+            box-shadow: 0 0 10px var(--accent-main);
+        }
+        .timeline-date { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--accent-sub); font-weight: 700; margin-bottom: 6px; }
+        .timeline-title { font-size: 1.1rem; font-weight: 900; color: var(--text-heading); margin-bottom: 4px; }
+        .timeline-org { font-size: 0.85rem; color: var(--text-muted); }
+
+        /* Education */
+        .edu-card {
+            display: flex; align-items: center; gap: 30px;
+            background: var(--glass-bg); backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border); border-radius: 16px; padding: 40px;
+            transition: var(--transition-smooth);
+        }
+        .edu-card:hover { border-color: rgba(109,40,217,0.3); transform: translateY(-5px); }
+        .edu-icon { font-size: 3rem; }
+        .edu-info h3 { font-size: 1.3rem; font-weight: 900; color: var(--text-heading); }
+        .edu-info p { color: var(--text-muted); font-size: 0.95rem; }
+        .edu-badge {
+            margin-left: auto; padding: 6px 14px; background: rgba(34,197,94,0.15);
+            color: #22c55e; border-radius: 20px; font-size: 0.8rem; font-weight: 700;
+            border: 1px solid rgba(34,197,94,0.3);
+        }
+
+        /* Contact */
+        .contact { text-align: center; }
+        .contact-box {
+            background: linear-gradient(145deg, rgba(25,25,35,0.6), rgba(15,15,20,0.8));
+            border: 1px solid var(--glass-border); border-radius: 24px; padding: 80px 40px;
+            position: relative; overflow: hidden;
+        }
+        .contact-box::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, var(--accent-main), var(--accent-sub), var(--accent-cyan));
+            background-size: 200% 100%;
+            animation: gradientSlide 3s ease infinite;
+        }
+        @keyframes gradientSlide { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+        .contact-title { font-size: 2rem; font-weight: 900; color: var(--text-heading); margin-bottom: 20px; }
+        .contact-desc { margin-bottom: 40px; font-size: 1.1rem; }
+        .contact-info-wrap {
+            display: inline-flex; align-items: center; justify-content: center; gap: 40px; flex-wrap: wrap;
+        }
+        .contact-item { 
+            font-size: 1.2rem; font-weight: 700; color: var(--text-heading); 
+            transition: var(--transition-smooth); cursor: none;
+            padding: 12px 24px; border-radius: 12px; border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+        }
+        .contact-item:hover { color: #f472b6; transform: scale(1.05); border-color: rgba(219,39,119,0.3); }
+
+        /* Toast notification */
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: rgba(34,197,94,0.9); color: #fff; padding: 14px 28px;
+            border-radius: 12px; font-weight: 700; font-size: 0.9rem; z-index: 99999;
+            backdrop-filter: blur(10px); transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+            pointer-events: none;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        footer { text-align: center; padding: 40px; font-size: 0.8rem; color: var(--text-muted); font-weight: 500; letter-spacing: 1px; }
+
+        /* Animation Classes */
+        .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* Staggered children reveal */
+        .stagger-reveal > * { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+        .stagger-reveal.active > *:nth-child(1) { transition-delay: 0.1s; }
+        .stagger-reveal.active > *:nth-child(2) { transition-delay: 0.2s; }
+        .stagger-reveal.active > *:nth-child(3) { transition-delay: 0.3s; }
+        .stagger-reveal.active > *:nth-child(4) { transition-delay: 0.4s; }
+        .stagger-reveal.active > * { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 900px) {
+            .hero-content { grid-template-columns: 1fr; text-align: center; }
+            .hero-text .typing-wrap { margin: 0 auto 40px; }
+            .hero-tags { justify-content: center; }
+            .profile-wrapper { max-width: 300px; margin: 0 auto; }
+            .profile-img { width: 100%; height: auto; }
+            .section-title { font-size: 2rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .edu-card { flex-direction: column; text-align: center; }
+            .edu-badge { margin-left: 0; }
+            .cursor-dot, .cursor-ring { display: none; }
+            body { cursor: auto; }
+            a, .contact-item, .nav-links a { cursor: pointer; }
+        }
+        @media (max-width: 600px) {
+            .nav-links { display: none; }
+            section { padding: 80px 0; }
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+            .stat-number { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-ring" id="cursor-ring"></div>
+    <div id="progress-bar"></div>
+    <canvas id="particle-canvas"></canvas>
+    <div class="mesh-bg">
+        <div class="mesh-obj mesh-1"></div>
+        <div class="mesh-obj mesh-2"></div>
+        <div class="mesh-obj mesh-3"></div>
+    </div>
+    <div class="noise-overlay"></div>
+    <div class="toast" id="toast"></div>
+
+    <nav>
+        <div class="nav-logo">강태원</div>
+        <ul class="nav-links">
+            <li><a href="#about">소개</a></li>
+            <li><a href="#experience">실무 기록</a></li>
+            <li><a href="#achievements">주요 성과</a></li>
+            <li><a href="#career-desc">경력기술서</a></li>
+            <li><a href="#contact">연락처</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="about" class="hero reveal">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <span class="section-label">현장 운영 및 관리 지원</span>
+                    <h1>빠른 대처와<br><span>안정적인 운영.</span></h1>
+                    <div class="typing-wrap">
+                        <span id="typing-text"></span><span class="typing-cursor"></span>
+                    </div>
+                    <div class="hero-tags">
+                        <div class="hero-tag"><span class="dot"></span> 민주평통 자문위원</div>
+                        <div class="hero-tag"><span class="dot"></span> MBC 저널리스트 교육 수료</div>
+                        <div class="hero-tag"><span class="dot"></span> 행사 슈퍼바이저 2년+</div>
+                    </div>
+                </div>
+                <div class="profile-wrapper reveal" style="transition-delay: 0.2s">
+                    <div class="profile-glow"></div>
+                    <img src="강태원1.png" alt="강태원 프로필" class="profile-img">
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="stats-section">
+            <div class="stats-grid stagger-reveal reveal">
+                <div class="stat-card">
+                    <div class="stat-number"><span class="counter" data-target="3">0</span><span class="stat-unit">개</span></div>
+                    <div class="stat-label">기관 동시 활동</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number"><span class="counter" data-target="2">0</span><span class="stat-unit">년+</span></div>
+                    <div class="stat-label">현장 운영 경력</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number"><span class="counter" data-target="3">0</span><span class="stat-unit">개</span></div>
+                    <div class="stat-label">직무 역할 수행</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number"><span class="counter" data-target="1">0</span><span class="stat-unit">건</span></div>
+                    <div class="stat-label">공식 매체 기고</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience -->
+        <section id="experience">
+            <div class="section-header reveal">
+                <span class="section-label">Experience</span>
+                <h2 class="section-title">실무 기록</h2>
+            </div>
+            
+            <div class="exp-grid">
+                <div class="exp-card reveal">
+                    <span class="exp-icon">🏛️</span>
+                    <div class="exp-header">
+                        <div class="exp-org">민주평화통일자문회의</div>
+                        <div class="exp-period">2025.11 - 현재</div>
+                    </div>
+                    <div class="exp-role">특별위원회 / 홍보처 / 고양시협의회</div>
+                    <ul class="exp-tasks">
+                        <li>'청년 통통 포럼' 실무 지원 및 운영 보조 (정책 정담회 등 회의 논의 내용 요약·기록)</li>
+                        <li>청년 세대 고충 데이터 수집 및 정책 의제 발굴 실무 서포트</li>
+                        <li>사회적 대화 기구 회의록 구조화 지원 및 제22기 사무처 기자단 원고 작성</li>
+                    </ul>
+                </div>
+
+                <div class="exp-card reveal" style="transition-delay: 0.1s">
+                    <span class="exp-icon">📺</span>
+                    <div class="exp-header">
+                        <div class="exp-org">MBC (문화방송)</div>
+                        <div class="exp-period">2025.11 - 2026.04 (수료)</div>
+                    </div>
+                    <div class="exp-role">저널리스트 교육 과정</div>
+                    <ul class="exp-tasks">
+                        <li>방송 기사 작성 실습 및 현업 기자 직무 멘토링 이수</li>
+                        <li>사회 이슈 모니터링 및 취재 보조 보도안 작성 실무</li>
+                        <li>기초 영상 편집 및 취재 장비 운용 학습</li>
+                    </ul>
+                </div>
+
+                <div class="exp-card reveal" style="transition-delay: 0.2s">
+                    <span class="exp-icon">🎤</span>
+                    <div class="exp-header">
+                        <div class="exp-org">아이엠에이전시 행사운영팀</div>
+                        <div class="exp-period">2023.03 - 2025.08</div>
+                    </div>
+                    <div class="exp-role">슈퍼바이저</div>
+                    <ul class="exp-tasks">
+                        <li>공공/기업 행사 현장 운영 총괄 및 타임테이블 관리</li>
+                        <li>행사 중 발생하는 돌발 상황 대응 및 현장 스태프 지휘·조율</li>
+                        <li>토론회 및 세미나 등 대화 중심 행사 현장 환경 구축</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Achievements Timeline -->
+        <section id="achievements" class="achievements">
+            <div class="section-header reveal">
+                <span class="section-label">Achievements</span>
+                <h2 class="section-title">주요 성과</h2>
+            </div>
+            <div class="timeline reveal">
+                <div class="timeline-item">
+                    <div class="timeline-date">2026.03</div>
+                    <div class="timeline-title">평화통일 사회적 대화 퍼실리테이터단 교육 수료</div>
+                    <div class="timeline-org">민주평화통일자문회의</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2025.12</div>
+                    <div class="timeline-title">민주평통 정책 현장 취재 및 공식 매체 보도 기사 집필</div>
+                    <div class="timeline-org">민주평화통일자문회의 홍보처</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2025.11</div>
+                    <div class="timeline-title">제22기 민주평화통일자문회의 자문위원 위촉</div>
+                    <div class="timeline-org">대통령 (민주평화통일자문회의)</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Career Description -->
+        <section id="career-desc">
+            <div class="section-header reveal">
+                <span class="section-label">Core Competency</span>
+                <h2 class="section-title">경력 기술서</h2>
+            </div>
+            <div class="exp-grid">
+                <div class="exp-card reveal">
+                    <span class="exp-icon">⚡</span>
+                    <div class="exp-org" style="margin-bottom:12px">현장 돌발 상황 대응</div>
+                    <p style="font-size:0.95rem;line-height:1.7">프리랜서 행사 슈퍼바이저로 2년 이상 활동하며, 현장에서 발생하는 장비 고장·일정 변경·인원 이탈 등 예기치 못한 상황을 즉각 판단하고 조율해 왔습니다. 공공 행사부터 기업 세미나까지 다양한 현장에서 타임테이블을 관리하고 스태프를 지휘한 경험이 있습니다.</p>
+                </div>
+                <div class="exp-card reveal" style="transition-delay:0.1s">
+                    <span class="exp-icon">🗂️</span>
+                    <div class="exp-org" style="margin-bottom:12px">회의 기록 및 의제 구조화</div>
+                    <p style="font-size:0.95rem;line-height:1.7">MBC 저널리스트 교육 과정에서 익힌 기록 역량을 바탕으로, 민주평통 내 토론회·워크숍·정책 정담회에서 발언 내용을 빠짐없이 기록하고 결과 요약서로 정리하는 업무를 수행하고 있습니다. 객관적 시각을 유지하면서 논점을 구조화하는 데 집중합니다.</p>
+                </div>
+                <div class="exp-card reveal" style="transition-delay:0.2s">
+                    <span class="exp-icon">🤝</span>
+                    <div class="exp-org" style="margin-bottom:12px">이해관계 조율 및 퍼실리테이션</div>
+                    <p style="font-size:0.95rem;line-height:1.7">민주평통 퍼실리테이터단 교육을 수료하고, 서로 다른 입장을 가진 참여자들의 의견을 하나의 정책적 의제로 수렴하는 보조 역할을 담당하고 있습니다. 토론이 본래 목적에서 이탈하지 않도록 현장 분위기를 관리하며, 행사 운영 경험에서 체득한 실무 감각을 활용합니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact -->
+        <section id="contact" class="contact reveal">
+            <div class="contact-box">
+                <h2 class="contact-title">실무 협업 제안</h2>
+                <p class="contact-desc">현장 중심의 안정적인 운영 지원이 필요하시다면 연락해 주십시오.</p>
+                <div class="contact-info-wrap">
+                    <div class="contact-item" onclick="copyToClipboard('010-5838-6709')">📱 010-5838-6709</div>
+                    <div class="contact-item" onclick="copyToClipboard('rk11172008@nate.com')">✉️ rk11172008@nate.com</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        © 2026 KANG TAEWON. ALL RIGHTS RESERVED.
+    </footer>
+
+    <script>
+        // 1. Particle System (Canvas)
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let mouse = { x: null, y: null };
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.opacity = Math.random() * 0.5 + 0.1;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(167, 139, 250, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const count = Math.min(80, Math.floor(canvas.width * canvas.height / 15000));
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle());
+            }
+        }
+        initParticles();
+
+        function connectParticles() {
+            for (let a = 0; a < particles.length; a++) {
+                for (let b = a + 1; b < particles.length; b++) {
+                    const dx = particles[a].x - particles[b].x;
+                    const dy = particles[a].y - particles[b].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 120) {
+                        ctx.strokeStyle = `rgba(167, 139, 250, ${0.08 * (1 - dist / 120)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[a].x, particles[a].y);
+                        ctx.lineTo(particles[b].x, particles[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            connectParticles();
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // 2. Typing Effect
+        const sentences = [
+            '기획이 현장에서 실제로 작동하도록 지원하고 리스크를 최소화합니다.',
+            '돌발 상황에서도 흔들리지 않는 현장 감각을 갖추고 있습니다.',
+            '정책이 사람에게 닿을 수 있도록 기록하고 전달합니다.'
+        ];
+        let sentenceIdx = 0, charIdx = 0, isDeleting = false;
+        const typingEl = document.getElementById('typing-text');
+
+        function typeWriter() {
+            const current = sentences[sentenceIdx];
+            if (!isDeleting) {
+                typingEl.textContent = current.substring(0, charIdx + 1);
+                charIdx++;
+                if (charIdx === current.length) {
+                    isDeleting = true;
+                    setTimeout(typeWriter, 2000);
+                    return;
+                }
+                setTimeout(typeWriter, 50);
+            } else {
+                typingEl.textContent = current.substring(0, charIdx - 1);
+                charIdx--;
+                if (charIdx === 0) {
+                    isDeleting = false;
+                    sentenceIdx = (sentenceIdx + 1) % sentences.length;
+                    setTimeout(typeWriter, 500);
+                    return;
+                }
+                setTimeout(typeWriter, 30);
+            }
+        }
+        setTimeout(typeWriter, 1000);
+
+        // 3. Scroll Progress Bar
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('progress-bar').style.width = scrolled + '%';
+        });
+
+        // 4. Intersection Observer
+        const observerOptions = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    // Trigger counter animation
+                    entry.target.querySelectorAll('.counter').forEach(counter => {
+                        if (!counter.dataset.started) {
+                            counter.dataset.started = 'true';
+                            animateCounter(counter);
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // 5. Counter Animation
+        function animateCounter(el) {
+            const target = parseInt(el.dataset.target);
+            const duration = 2000;
+            const start = performance.now();
+            function update(now) {
+                const elapsed = now - start;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                el.textContent = Math.floor(eased * target);
+                if (progress < 1) requestAnimationFrame(update);
+            }
+            requestAnimationFrame(update);
+        }
+
+        // 6. 3D Tilt Effect
+        document.querySelectorAll('.exp-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -5;
+                const rotateY = ((x - centerX) / centerX) * 5;
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px) scale(1.02)`;
+                card.style.transition = 'none';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = '';
+                card.style.transition = 'var(--transition-smooth)';
+            });
+        });
+
+        // 7. Custom Cursor
+        const cursorDot = document.getElementById('cursor-dot');
+        const cursorRing = document.getElementById('cursor-ring');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursorDot.style.left = e.clientX - 4 + 'px';
+            cursorDot.style.top = e.clientY - 4 + 'px';
+            cursorRing.style.left = e.clientX + 'px';
+            cursorRing.style.top = e.clientY + 'px';
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+
+        document.querySelectorAll('a, .contact-item, .exp-card, .stat-card, .timeline-item').forEach(el => {
+            el.addEventListener('mouseenter', () => cursorRing.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursorRing.classList.remove('hover'));
+        });
+
+        // 8. Copy to Clipboard with Toast
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('toast');
+                toast.textContent = '✅ ' + text + ' 복사 완료!';
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2500);
+            });
+        }
+        
+        // Initial Trigger
+        setTimeout(() => { document.querySelector('.hero').classList.add('active'); }, 100);
+    </script>
+</body>
+</html>
